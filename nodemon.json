@@ -1,0 +1,6 @@
+{
+    "_comment" : "This mapping is used for sucrase. It signs that every time an file with .js extension is executed, the 'sucrase/register' file should be executed before",
+    "execMap": {
+       "js":  "node -r sucrase/register"
+    }
+}
