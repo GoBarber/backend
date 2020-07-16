@@ -13,10 +13,7 @@ class CreateUserService {
     const userRepository = getRepository(User);
 
     const checkUserExists = await userRepository.findOne({ where: { email } });
-
-    if (checkUserExists) {
-      throw new Error('Email address already registered.');
-    }
+    if (checkUserExists) throw new Error('Email address already registered.');
 
     const hashedPassword = await hash(password, 8);
 
