@@ -1,8 +1,8 @@
 import { hash } from 'bcryptjs';
-import { getRepository } from 'typeorm';
 
 import AppError from '@shared/errors/AppError';
 import User from '../infra/typeorm/entities/User';
+import IUserRepository from '../repositories/IUserRepository';
 
 interface Request {
   name: string;
@@ -11,21 +11,19 @@ interface Request {
 }
 
 class CreateUserService {
-  async execute({ name, email, password }: Request): Promise<User> {
-    const userRepository = getRepository(User);
+  constructor(private userRepository: IUserRepository) {}
 
-    const checkUserExists = await userRepository.findOne({ where: { email } });
+  async execute({ name, email, password }: Request): Promise<User> {
+    const checkUserExists = await this.userRepository.findByEmail(email);
     if (checkUserExists) throw new AppError('Email já registrado.');
 
     const hashedPassword = await hash(password, 8);
 
-    const user = userRepository.create({
+    const user = await this.userRepository.create({
       name,
       email,
       password: hashedPassword,
     });
-
-    await userRepository.save(user);
 
     return user;
   }
