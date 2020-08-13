@@ -1,7 +1,7 @@
-import { parseISO } from 'date-fns';
 import { Router } from 'express';
+import { parseISO } from 'date-fns';
+import { container } from 'tsyringe';
 
-import AppointmentsRepository from '@modules/appointments/infra/typeorm/repositories/AppointmentsRepository';
 import CreateAppointmentService from '@modules/appointments/services/CreateAppointmentService';
 import ensureAuthenticated from '@modules/users/infra/http/middlewares/EnsureAuthenticated';
 
@@ -15,15 +15,14 @@ appointmentsRouter.use(ensureAuthenticated);
 // });
 
 appointmentsRouter.post('/', async (request, response) => {
-  const appointmentsRepository = new AppointmentsRepository();
-
   const { provider_id, date } = request.body;
 
   const parsedDate = parseISO(date);
 
-  const createAppointment = new CreateAppointmentService(
-    appointmentsRepository,
-  );
+  // O que container.resolve faz?
+  // Ele vai instanciar o Service, que agora é injetável
+  // E passará como valor no seu constutor, o a variável declarada em '@shared/container/index.ts'
+  const createAppointment = container.resolve(CreateAppointmentService);
 
   const appointment = await createAppointment.execute({
     date: parsedDate,
