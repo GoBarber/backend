@@ -2,9 +2,10 @@ import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { getRepository } from 'typeorm';
 
-import User from '../models/User';
-import AppError from '../errors/AppError';
-import authConfig from '../config/auth';
+import authConfig from '@config/auth';
+import AppError from '@shared/errors/AppError';
+
+import User from '../infra/typeorm/entities/User';
 
 interface Request {
   email: string;
@@ -21,7 +22,8 @@ class AuthenticateUserService {
     const userRepository = getRepository(User);
 
     const user = await userRepository.findOne({ where: { email } });
-    if (!user) throw new AppError('Combinação incorreta de email e senha.', 401);
+    if (!user)
+      throw new AppError('Combinação incorreta de email e senha.', 401);
 
     const match = await compare(password, user.password);
     if (!match)
