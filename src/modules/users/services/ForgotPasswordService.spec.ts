@@ -5,30 +5,37 @@ import FakeMailProvider from '@shared/container/helper/MailHelper/fakes/FakeMail
 import AppError from '@shared/errors/AppError';
 import ForgotPasswordService from './ForgotPasswordService';
 import FakeUserRepository from '../repositories/fakes/FakeUserRepository';
+import FakeUserTokensRepository from '../repositories/fakes/FakeUserTokenRepository';
+import User from '../infra/typeorm/entities/User';
 
 describe('ForgotPassword', () => {
   let forgotPassword: ForgotPasswordService;
   let fakeUserRepo: FakeUserRepository;
   let fakeMailProvider: FakeMailProvider;
+  let fakeTokenRepo: FakeUserTokensRepository;
+  let user: User;
 
   beforeEach(async () => {
-    fakeMailProvider = new FakeMailProvider();
     fakeUserRepo = new FakeUserRepository();
-    forgotPassword = new ForgotPasswordService(fakeUserRepo, fakeMailProvider);
-  });
+    fakeMailProvider = new FakeMailProvider();
+    fakeTokenRepo = new FakeUserTokensRepository();
+    forgotPassword = new ForgotPasswordService(
+      fakeUserRepo,
+      fakeMailProvider,
+      fakeTokenRepo,
+    );
 
-  it('should be able to recover password', async () => {
-    await fakeUserRepo.create({
+    user = await fakeUserRepo.create({
       name: 'Teste',
       email: 'teste@teste.com',
       password: 'teste123',
     });
+  });
 
+  it('should be able to recover password', async () => {
     const sendMailSpy = jest.spyOn(fakeMailProvider, 'sendMail');
 
-    await forgotPassword.execute({
-      email: 'teste@teste.com',
-    });
+    await forgotPassword.execute({ email: user.email });
 
     expect(sendMailSpy).toHaveBeenCalled();
   });
@@ -36,7 +43,7 @@ describe('ForgotPassword', () => {
   it('should not recover password of non-existing user', async () => {
     try {
       await forgotPassword.execute({
-        email: 'teste@teste.com',
+        email: 'non_existing_email@email.com',
       });
 
       expect(true).toBe(false);
@@ -46,5 +53,13 @@ describe('ForgotPassword', () => {
       expect(error).toHaveProperty('statusCode');
       expect(error.message).toBe('Email não cadastrado.');
     }
+  });
+
+  it('should generate forgot password token', async () => {
+    const generateTokenSpy = jest.spyOn(fakeTokenRepo, 'generate');
+
+    await forgotPassword.execute({ email: user.email });
+
+    expect(generateTokenSpy).toHaveBeenCalledWith(user.id);
   });
 });
