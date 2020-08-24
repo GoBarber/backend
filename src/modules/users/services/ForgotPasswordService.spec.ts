@@ -1,12 +1,10 @@
-// import AppError from '@shared/errors/AppError';
-
+import AppError from '@shared/errors/AppError';
 import FakeMailProvider from '@shared/container/helper/MailHelper/fakes/FakeMailProvider';
 
-import AppError from '@shared/errors/AppError';
+import User from '../infra/typeorm/entities/User';
 import ForgotPasswordService from './ForgotPasswordService';
 import FakeUserRepository from '../repositories/fakes/FakeUserRepository';
 import FakeUserTokensRepository from '../repositories/fakes/FakeUserTokenRepository';
-import User from '../infra/typeorm/entities/User';
 
 describe('ForgotPassword', () => {
   let forgotPassword: ForgotPasswordService;
