@@ -1,11 +1,8 @@
 import { Router } from 'express';
+import projectsRouter from './projects.routes';
 
 const routes = Router();
 
-routes.get('/', (request, response) => {
-  // const { name, email } = request.body;
-
-  response.json({ message: '111aaa' });
-});
+routes.use('/projects', projectsRouter);
 
 export default routes;
