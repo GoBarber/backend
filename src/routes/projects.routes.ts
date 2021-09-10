@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { uuid } from 'uuidv4';
+
 import ProjectsRepository from '../repositories/ProjectsRepository';
+import CreateProjectServiceService from '../services/CreateProjectService';
+
 
 const projectsRouter = Router();
 const projectsRepository = new ProjectsRepository();
-
 
 
 projectsRouter.get('/', (request, response) => {
@@ -18,23 +19,16 @@ projectsRouter.get('/', (request, response) => {
 projectsRouter.post('/', (request, response) => {
   const { url, name, description } = request.body;
 
+  try {
+    const createProject = new CreateProjectServiceService(projectsRepository);
+    const project = createProject.execute({url, name, description});
 
-  const findProjectSameURL = projectsRepository.findByURL(url);
-
-  if (findProjectSameURL) {
-    return response.status(400).json({ message: 'This project is already registered.' });
+    return response.json(project);
   }
-
-  const Project = {
-    id: uuid(),
-    name,
-    url,
-    description
-  };
-
-  const project = projectsRepository.create({url, name, description});
-
-  return response.json(project);
+  catch (e) {
+    const { message } = e as Error
+    return response.status(400).json({ message: message });
+  }
 });
 
 
