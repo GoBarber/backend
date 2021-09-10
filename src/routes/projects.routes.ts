@@ -32,7 +32,7 @@ projectsRouter.post('/', (request, response) => {
     description
   };
 
-  const project = projectsRepository.create(url, name, description);
+  const project = projectsRepository.create({url, name, description});
 
   return response.json(project);
 });

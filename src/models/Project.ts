@@ -9,7 +9,8 @@ class Project {
 
   description: string;
 
-  constructor(url: string, name: string, description: string) {
+
+  constructor({ url, name, description }: Omit<Project, 'id'>) {
     this.id = uuid();
     this.url = url;
     this.name = name;
