@@ -3,8 +3,13 @@ import {
   Column,
   PrimaryGeneratedColumn,
   CreateDateColumn,
-  UpdateDateColumn
+  UpdateDateColumn,
+  ManyToOne,
+  JoinColumn
 } from "typeorm";
+
+import User from "./User";
+
 
 @Entity("projects")
 class Project {
@@ -20,6 +25,10 @@ class Project {
 
   @Column()
   description: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "user_id" })
+  provider: User;
 
   @CreateDateColumn()
   created_at: Date;
