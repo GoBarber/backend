@@ -1,21 +1,31 @@
-import { uuid } from 'uuidv4';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn
+} from "typeorm";
 
+@Entity("projects")
 class Project {
+
+  @PrimaryGeneratedColumn("uuid")
   id: string;
 
+  @Column()
   url: string;
 
+  @Column()
   name: string;
 
+  @Column()
   description: string;
 
+  @CreateDateColumn()
+  created_at: Date;
 
-  constructor({ url, name, description }: Omit<Project, 'id'>) {
-    this.id = uuid();
-    this.url = url;
-    this.name = name;
-    this.description = description;
-  }
+  @UpdateDateColumn()
+  updated_at: Date;
 }
 
 export default Project;

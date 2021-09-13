@@ -23,11 +23,17 @@ docker rm $(docker ps -a -q)
 
 ```
 
+Checks database:
+```
+docker exec -it db_fc /bin/bash
+psql -U postgres
+\c fider_community
+\dt
+select * from migrations;
+```
+
 Migrate: ```yarn typeorm migration:run```
 
 Create migration: ```yarn typeorm migration:create -n MigrationName```
 
 Check PID: ```sudo netstat -nlp | grep :5432```
-
-
-Github instructions: https://github.com/GlauberC/notes/tree/master/Cursos/javascript/gostack11/

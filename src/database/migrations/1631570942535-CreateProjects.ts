@@ -11,7 +11,8 @@ export class CreateProjects1631570942535 implements MigrationInterface {
                 name: "id",
                 type: "uuid",
                 isPrimary: true,
-                generationStrategy: "uuid"
+                generationStrategy: "uuid",
+                default: 'uuid_generate_v4()'
               },
               {
                 name: "url",

@@ -1,27 +1,29 @@
 import { Router } from 'express';
+import { getCustomRepository } from "typeorm";
 
 import ProjectsRepository from '../repositories/ProjectsRepository';
-import CreateProjectServiceService from '../services/CreateProjectService';
+import CreateProjectService from '../services/CreateProjectService';
 
 
 const projectsRouter = Router();
 const projectsRepository = new ProjectsRepository();
 
 
-projectsRouter.get('/', (request, response) => {
-  const projects = projectsRepository.all();
+projectsRouter.get('/', async (request, response) => {
+  const projectsRepository = getCustomRepository(ProjectsRepository);
+  const projects = await projectsRepository.find();
 
   return response.json(projects);
 });
 
 
 
-projectsRouter.post('/', (request, response) => {
-  const { url, name, description } = request.body;
-
+projectsRouter.post('/', async (request, response) => {
   try {
-    const createProject = new CreateProjectServiceService(projectsRepository);
-    const project = createProject.execute({url, name, description});
+    const { url, name, description } = request.body;
+    
+    const createProject = new CreateProjectService();
+    const project = await createProject.execute({url, name, description});
 
     return response.json(project);
   }

@@ -1,5 +1,8 @@
+import { getCustomRepository } from "typeorm";
+
 import Project from '../models/Project';
 import ProjectsRepository from '../repositories/ProjectsRepository';
+
 
 interface Request {
     url: string;
@@ -9,20 +12,17 @@ interface Request {
 
 
 class CreateProjectService {
-  private projectsRepository: ProjectsRepository;
-
-  constructor(projectsRepository: ProjectsRepository) {
-    this.projectsRepository = projectsRepository;
-  }
-
-  public execute({ url, name, description }: Request): Project {
-    const findoProjectSameURL = this.projectsRepository.findByURL(url);
+  public async execute({ url, name, description }: Request): Promise<Project> {
+    const projectsRepository = getCustomRepository(ProjectsRepository);
+    
+    const findoProjectSameURL = await projectsRepository.findByURL(url);
 
     if (findoProjectSameURL) {
       throw Error('This project is already registered.');
     }
 
-    const project = this.projectsRepository.create({ url, name, description });
+    const project = projectsRepository.create({ url, name, description });
+    await projectsRepository.save(project);
 
     return project;
   }
