@@ -3,10 +3,12 @@ import { getCustomRepository } from "typeorm";
 
 import ProjectsRepository from '../repositories/ProjectsRepository';
 import CreateProjectService from '../services/CreateProjectService';
+import ensureAuthenticated from '../middlewares/EnsureAuthenticated';
 
 
 const projectsRouter = Router();
-const projectsRepository = new ProjectsRepository();
+// projectsRouter.use(ensureAuthenticated); // COLOCAR PARA APENAS UMA ROTA!!!!
+
 
 
 projectsRouter.get('/', async (request, response) => {
@@ -18,7 +20,7 @@ projectsRouter.get('/', async (request, response) => {
 
 
 
-projectsRouter.post('/', async (request, response) => {
+projectsRouter.post('/', ensureAuthenticated, async (request, response) => {
   try {
     const { url, name, description, user_id} = request.body;
     
@@ -31,6 +33,16 @@ projectsRouter.post('/', async (request, response) => {
     const { message } = e as Error
     return response.status(400).json({ message: message });
   }
+});
+
+
+projectsRouter.get('/my-projects', ensureAuthenticated, async (request, response) => {
+  const projectsRepository = getCustomRepository(ProjectsRepository);
+
+  const id = request.user.id
+  const projects = await projectsRepository.find({ where: { user_id: id } });
+
+  return response.json(projects);
 });
 
 
