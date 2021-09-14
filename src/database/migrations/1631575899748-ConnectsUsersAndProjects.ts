@@ -13,7 +13,7 @@ import {
         new TableColumn({
           name: "user_id",
           type: "uuid",
-          isNullable: true
+          isNullable: false
         })
       );
   

@@ -20,10 +20,10 @@ projectsRouter.get('/', async (request, response) => {
 
 projectsRouter.post('/', async (request, response) => {
   try {
-    const { url, name, description } = request.body;
+    const { url, name, description, user_id} = request.body;
     
     const createProject = new CreateProjectService();
-    const project = await createProject.execute({url, name, description});
+    const project = await createProject.execute({ url, name, description, user_id });
 
     return response.json(project);
   }

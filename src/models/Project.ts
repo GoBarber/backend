@@ -26,6 +26,9 @@ class Project {
   @Column()
   description: string;
 
+  @Column()
+  user_id: string;
+
   @ManyToOne(() => User)
   @JoinColumn({ name: "user_id" })
   provider: User;
